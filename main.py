@@ -13,7 +13,7 @@ class Bola():
     def __init__(self, main, pos_bola):
         self.main = main
         self.tam_bola = 10
-        self.vel_bola = [self.gerar_velocide(), self.gerar_velocide()]
+        self.vel_bola = [self.gerar_velocidade(), self.gerar_velocidade()]
         self.pos_bola = list(pos_bola)
 
     def hitbox_bola(self):
@@ -24,7 +24,7 @@ class Bola():
             pos_hitbox_canto[0], pos_hitbox_canto[1], tam_hitbox, tam_hitbox)
         return hitbox
 
-    def gerar_velocide(self):
+    def gerar_velocidade(self):
         return random.randrange(-VEL_BOLA, VEL_BOLA)
 
     def direcionar(self):
