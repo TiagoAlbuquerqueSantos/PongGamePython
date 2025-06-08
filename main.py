@@ -1,6 +1,5 @@
 
 import sys
-import time
 import random
 import pygame
 
@@ -115,12 +114,11 @@ class Game:
         pygame.init()
         pygame.display.set_caption('Pong Game')
         self.tela = pygame.display.set_mode(RESOLUCAO_TELA)
+        self.font_style = pygame.font.SysFont(None, 30)
         self.relogio = pygame.time.Clock()
         self.dt = 0.1
 
         self.pontos = [0, 0]
-
-        self.font_style = pygame.font.SysFont(None, 30)
 
         self.bolas = [Bola(self, (LARGURA // 2, ALTURA // 2))]
 
@@ -156,6 +154,12 @@ class Game:
                     bola.vel_bola[0] *= -1
                     self.pontos[1] += 1
 
+                    num_aleatorio = random.randrange(3, 50)
+                    print(num_aleatorio)
+                    if self.pontos[0] == num_aleatorio and self.pontos[1] == num_aleatorio:
+                        self.bolas.append(
+                            Bola(self, (LARGURA // 2, ALTURA // 2)))
+
                 if bola.pos_bola[0] < 0 or bola.pos_bola[0] > LARGURA:
                     pygame.quit()
                     sys.exit()
@@ -171,10 +175,6 @@ class Game:
                 if evento.type == pygame.QUIT or (evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE):
                     pygame.quit()
                     sys.exit()
-                if evento.type == pygame.KEYDOWN:
-                    if evento.key == pygame.K_p:
-                        self.bolas.append(
-                            Bola(self, (LARGURA // 2, ALTURA // 2)))
 
             pygame.display.update()
             self.dt = self.relogio.tick(FPS) / 1000
