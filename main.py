@@ -3,8 +3,10 @@ import sys
 import random
 import pygame
 
-VEL_BOLA = 300
 TAM_TELA = (640, 480)
+FPS = 60
+
+VEL_BOLA = 300
 
 
 class Bola():
@@ -110,7 +112,7 @@ class Game:
         pygame.display.set_caption('Pong Game')
         self.tela = pygame.display.set_mode(TAM_TELA)
         self.relogio = pygame.time.Clock()
-        self.dt = 0.01
+        self.dt = 0.1
 
         self.pontos = [0, 0]
 
@@ -122,9 +124,13 @@ class Game:
         self.jogador_1 = PlayerEsquerda(self)
         self.jogador_2 = PlayerDireita(self)
 
+    def linha_divisao(self):
+        pygame.draw.line(self.tela, (255, 255, 255),
+                         (TAM_TELA[0] // 2, 0), (TAM_TELA[0] // 2, self.tela.get_height()), 1)
+
     def desenhar_pontuacao(self):
         texto = self.font_style.render(
-            f'Pontuaçao: A {self.pontos[0]} | B {self.pontos[1]}', None, (255, 255, 0))
+            f'Pontuação: A {self.pontos[0]} | B {self.pontos[1]}', None, (255, 255, 0))
         rect_texto = texto.get_rect(
             center=(TAM_TELA[0] // 2, 10))
         self.tela.blit(texto, rect_texto)
@@ -153,6 +159,7 @@ class Game:
             self.jogador_1.desenhar()
             self.jogador_2.desenhar()
 
+            self.linha_divisao()
             self.desenhar_pontuacao()
 
             for evento in pygame.event.get():
@@ -161,7 +168,8 @@ class Game:
                     sys.exit()
 
             pygame.display.update()
-            self.dt = self.relogio.tick(60) / 1000
+            self.dt = self.relogio.tick(FPS) / 1000
+            self.dt = max(0.001, min(0.1, self.dt))
 
 
 Game().rodar()
