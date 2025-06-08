@@ -3,25 +3,29 @@ import sys
 import random
 import pygame
 
-TAM_TELA = (640, 480)
+RESOLUCAO_TELA = LARGURA, ALTURA = 640, 480
 FPS = 60
 
+COR_FUNDO = (0, 0, 0)
+
+# Propriedades da Bola
 VEL_BOLA = 300
+TAM_BOLA = 10
+COR_BOLA = (255, 255, 255)
+TAM_HITBOX = 20
 
 
 class Bola():
     def __init__(self, main, pos_bola):
         self.main = main
-        self.tam_bola = 10
         self.vel_bola = [self.gerar_velocidade(), self.gerar_velocidade()]
         self.pos_bola = list(pos_bola)
 
     def hitbox_bola(self):
-        tam_hitbox = 20
         pos_hitbox_canto = (
-            self.pos_bola[0] - self.tam_bola, self.pos_bola[1] - self.tam_bola)
+            self.pos_bola[0] - TAM_BOLA, self.pos_bola[1] - TAM_BOLA)
         hitbox = pygame.Rect(
-            pos_hitbox_canto[0], pos_hitbox_canto[1], tam_hitbox, tam_hitbox)
+            pos_hitbox_canto[0], pos_hitbox_canto[1], TAM_HITBOX, TAM_HITBOX)
         return hitbox
 
     def gerar_velocidade(self):
@@ -30,15 +34,14 @@ class Bola():
     def direcionar(self):
         self.pos_bola[0] += self.vel_bola[0] * self.main.dt
         self.pos_bola[1] += self.vel_bola[1] * self.main.dt
-        if self.pos_bola[1] < 0 or self.pos_bola[1] > TAM_TELA[1]:
+        if self.pos_bola[1] < 0 or self.pos_bola[1] > ALTURA:
             self.vel_bola[1] *= -1
 
     def atualizar(self):
         self.direcionar()
 
     def desenhar(self):
-        pygame.draw.circle(self.main.tela, (255, 255, 255),
-                           self.pos_bola, self.tam_bola)
+        pygame.draw.circle(self.main.tela, COR_BOLA, self.pos_bola, TAM_BOLA)
        # pygame.draw.rect(self.main.tela, (255, 255, 0), self.hitbox_bola())
 
 
@@ -63,8 +66,8 @@ class PlayerEsquerda:
 
         if self.pos_barra[1] < 0:
             self.pos_barra[1] = 0
-        if self.pos_barra[1] > TAM_TELA[1] - self.tam_barra[1]:
-            self.pos_barra[1] = TAM_TELA[1] - self.tam_barra[1]
+        if self.pos_barra[1] > ALTURA - self.tam_barra[1]:
+            self.pos_barra[1] = ALTURA - self.tam_barra[1]
 
     def atualizar(self):
         self.controle_movimento()
@@ -78,7 +81,7 @@ class PlayerDireita:
     def __init__(self, main):
         self.main = main
         self.tam_barra = [20, 150]
-        self.pos_barra = [TAM_TELA[0] - self.tam_barra[0], 0]
+        self.pos_barra = [LARGURA - self.tam_barra[0], 0]
         self.vel_barra = 200
 
     def hitbox_barra(self):
@@ -95,8 +98,8 @@ class PlayerDireita:
 
         if self.pos_barra[1] < 0:
             self.pos_barra[1] = 0
-        if self.pos_barra[1] > TAM_TELA[1] - self.tam_barra[1]:
-            self.pos_barra[1] = TAM_TELA[1] - self.tam_barra[1]
+        if self.pos_barra[1] > ALTURA - self.tam_barra[1]:
+            self.pos_barra[1] = ALTURA - self.tam_barra[1]
 
     def atualizar(self):
         self.controle_movimento()
@@ -110,7 +113,7 @@ class Game:
     def __init__(self):
         pygame.init()
         pygame.display.set_caption('Pong Game')
-        self.tela = pygame.display.set_mode(TAM_TELA)
+        self.tela = pygame.display.set_mode(RESOLUCAO_TELA)
         self.relogio = pygame.time.Clock()
         self.dt = 0.1
 
@@ -126,18 +129,18 @@ class Game:
 
     def linha_divisao(self):
         pygame.draw.line(self.tela, (255, 255, 255),
-                         (TAM_TELA[0] // 2, 0), (TAM_TELA[0] // 2, self.tela.get_height()), 1)
+                         (LARGURA // 2, 0), (LARGURA // 2, self.tela.get_height()), 1)
 
     def desenhar_pontuacao(self):
         texto = self.font_style.render(
             f'Pontuação: A {self.pontos[0]} | B {self.pontos[1]}', None, (255, 255, 0))
         rect_texto = texto.get_rect(
-            center=(TAM_TELA[0] // 2, 10))
+            center=(LARGURA // 2, 10))
         self.tela.blit(texto, rect_texto)
 
     def rodar(self):
         while True:
-            self.tela.fill((0, 0, 0))
+            self.tela.fill(COR_FUNDO)
 
             self.bola.atualizar()
             self.jogador_1.atualizar()
@@ -151,7 +154,7 @@ class Game:
                 self.bola.vel_bola[0] *= -1
                 self.pontos[1] += 1
 
-            if self.bola.pos_bola[0] < 0 or self.bola.pos_bola[0] > TAM_TELA[0]:
+            if self.bola.pos_bola[0] < 0 or self.bola.pos_bola[0] > LARGURA:
                 pygame.quit()
                 sys.exit()
 
