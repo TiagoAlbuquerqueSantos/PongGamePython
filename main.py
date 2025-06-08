@@ -1,5 +1,6 @@
 
 import sys
+import time
 import random
 import pygame
 
@@ -9,7 +10,7 @@ FPS = 60
 COR_FUNDO = (0, 0, 0)
 
 # Propriedades da Bola
-VEL_BOLA = 300
+VEL_BOLA = 200
 TAM_BOLA = 10
 COR_BOLA = (255, 255, 255)
 TAM_HITBOX = 20
@@ -121,8 +122,7 @@ class Game:
 
         self.font_style = pygame.font.SysFont(None, 30)
 
-        self.bola = Bola(self, (self.tela.get_width() //
-                         2, self.tela.get_height() // 2))
+        self.bolas = [Bola(self, (LARGURA // 2, ALTURA // 2))]
 
         self.jogador_1 = PlayerEsquerda(self)
         self.jogador_2 = PlayerDireita(self)
@@ -133,7 +133,7 @@ class Game:
 
     def desenhar_pontuacao(self):
         texto = self.font_style.render(
-            f'Pontuação: A {self.pontos[0]} | B {self.pontos[1]}', None, (255, 255, 0))
+            f'Pontuação: A {self.pontos[0]} | B {self.pontos[1]}', True, (255, 255, 0))
         rect_texto = texto.get_rect(
             center=(LARGURA // 2, 10))
         self.tela.blit(texto, rect_texto)
@@ -142,23 +142,25 @@ class Game:
         while True:
             self.tela.fill(COR_FUNDO)
 
-            self.bola.atualizar()
             self.jogador_1.atualizar()
             self.jogador_2.atualizar()
 
-            if self.bola.hitbox_bola().colliderect(self.jogador_1.hitbox_barra()):
-                self.bola.vel_bola[0] *= -1
-                self.pontos[0] += 1
+            for bola in self.bolas:
+                bola.atualizar()
 
-            if self.bola.hitbox_bola().colliderect(self.jogador_2.hitbox_barra()):
-                self.bola.vel_bola[0] *= -1
-                self.pontos[1] += 1
+                if bola.hitbox_bola().colliderect(self.jogador_1.hitbox_barra()):
+                    bola.vel_bola[0] *= -1
+                    self.pontos[0] += 1
 
-            if self.bola.pos_bola[0] < 0 or self.bola.pos_bola[0] > LARGURA:
-                pygame.quit()
-                sys.exit()
+                if bola.hitbox_bola().colliderect(self.jogador_2.hitbox_barra()):
+                    bola.vel_bola[0] *= -1
+                    self.pontos[1] += 1
 
-            self.bola.desenhar()
+                if bola.pos_bola[0] < 0 or bola.pos_bola[0] > LARGURA:
+                    pygame.quit()
+                    sys.exit()
+
+                bola.desenhar()
             self.jogador_1.desenhar()
             self.jogador_2.desenhar()
 
@@ -169,6 +171,10 @@ class Game:
                 if evento.type == pygame.QUIT or (evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE):
                     pygame.quit()
                     sys.exit()
+                if evento.type == pygame.KEYDOWN:
+                    if evento.key == pygame.K_p:
+                        self.bolas.append(
+                            Bola(self, (LARGURA // 2, ALTURA // 2)))
 
             pygame.display.update()
             self.dt = self.relogio.tick(FPS) / 1000
